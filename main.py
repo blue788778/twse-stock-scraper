@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import logging
 import pandas as pd
 
@@ -45,6 +45,8 @@ def main(handle_date):
             except Exception as e:
                 logging.error(f"{date_str} 抓取失敗，原因: {e}")
                 temp_date -= timedelta(days=1)
+            finally: 
+                time.sleep(2)   # 等待 2 秒，避免過度呼叫
         else:
             logging.error(f"超過 {max_lookback_days} 天仍未找到 {stock_no} 的有效資料")
 
