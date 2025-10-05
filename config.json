@@ -1,0 +1,13 @@
+{
+    "twse":{
+        "base_url": "https://www.twse.com.tw/exchangeReport/STOCK_DAY",
+        "response": "json",
+        "stock_nos": ["0050"],
+        "headers": {
+            "user_agent": "Mozilla/5.0"
+        }
+    },
+    "output_dir": "data",
+    "max_retries": 3,
+    "max_lookback_days": 10
+  }
