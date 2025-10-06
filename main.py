@@ -17,8 +17,9 @@ def main(handle_date):
     max_retries = config.get("max_retries", 5)
     max_lookback_days = config.get("max_lookback_days", 10)
 
-    for stock_no in stock_nos:
+    for idx, stock_no in enumerate(stock_nos):
         temp_date = handle_date   # 每檔獨立的日期控制
+
         for _ in range(max_lookback_days):
             date_str = temp_date.strftime("%Y%m%d")
             logging.info(f"嘗試抓取日期: {date_str}，股票: {stock_no}")
@@ -39,17 +40,21 @@ def main(handle_date):
 
                     filename = f"{stock_no}_{date_str}.csv"
                     save_data(df, output_dir, filename)
+                    logging.info(f"[{stock_no}] 抓取成功 - 日期: {date_str}, 筆數: {len(df)}")
                     break
                 else:
-                    logging.warning(f"{date_str} 無有效資料，往前一天繼續...")
+                    stat_msg = response_json.get("stat", "未知錯誤")
+                    logging.warning(f"{date_str} 無資料: {stat_msg}，往前一天繼續...")
                     temp_date -= timedelta(days=1)
             except Exception as e:
                 logging.error(f"{date_str} 抓取失敗，原因: {e}")
                 temp_date -= timedelta(days=1)
-            finally: 
-                time.sleep(2)   # 等待 2 秒，避免過度呼叫
         else:
             logging.error(f"超過 {max_lookback_days} 天仍未找到 {stock_no} 的有效資料")
+
+        # 只在還有下一檔股票時才 sleep
+        if idx < len(stock_nos) - 1:
+            time.sleep(2)
 
 if __name__ == "__main__":
     date_today = datetime.today()
